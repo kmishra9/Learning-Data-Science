@@ -1,0 +1,15 @@
+---
+title: "R for Data Science"
+output: html_notebook
+---
+
+This notebook attempts to navigate Hadley Wickham's [R for Data Science](http://r4ds.had.co.nz/index.html).
+```{r}
+library(tidyverse)
+tidyverse_update(recursive=TRUE)
+```
+
+
+### Chapter 3 - Data Visualization
+
+### Chapter 4 - 
