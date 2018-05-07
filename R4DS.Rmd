@@ -73,14 +73,33 @@ ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) +
   geom_smooth()
 ```
 
-You can also group up best fit lines by another variable and color it the same for both geoms.
+You can also group up best fit lines by another variable and color it the same for both geoms, in addition to jittering to prevent overfitting.
 ```{r message=FALSE, warning=FALSE}
 ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) + 
-  geom_point() + 
+  geom_point(position="jitter") + 
   geom_smooth(se = FALSE)
 ```
 
+Building cool bar charts is also possible with GGPlot. For example, we could make a normal colored bar chart or a stacked bar chart
+```{r}
+ggplot(data=diamonds) + 
+    geom_bar(mapping=aes(x=cut, fill=cut))
 
+ggplot(data=diamonds) + 
+    geom_bar(mapping=aes(x=cut, fill=clarity))
+```
+
+With additional complexity, we have an updated template
+```
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(
+     mapping = aes(<MAPPINGS>),
+     stat = <STAT>, 
+     position = <POSITION>
+  ) +
+  <COORDINATE_FUNCTION> +
+  <FACET_FUNCTION>
+ ```
 
 ### Chapter 4 - Workflow Basics
 
