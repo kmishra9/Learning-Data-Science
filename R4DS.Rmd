@@ -4,12 +4,84 @@ output: html_notebook
 ---
 
 This notebook attempts to navigate Hadley Wickham's [R for Data Science](http://r4ds.had.co.nz/index.html).
-```{r}
+```{r message=FALSE}
+
 library(tidyverse)
-tidyverse_update(recursive=TRUE)
 ```
 
 
 ### Chapter 3 - Data Visualization
+Initial question: Do cars with big engines use more fuel than cars with small engines? What does the relationship between engine size and fuel efficiency look like? 
 
-### Chapter 4 - 
+[GGPlot2 Cheatsheet](http://rstudio.com/cheatsheets)
+
+```{r}
+mpg %>% head
+```
+To characterize the variables a little better, `displ` measures engine displacement, in litres, `year` corresponds to the year the car was manufactured, `drv` corresponds to front-wheel drive, rear-wheel drive, or four-wheel drive, `cty` is city miles per gallon, `hwy` is highway miles per gallon, and `fl` is fuel type.
+
+```{r}
+ggplot(data=mpg) + 
+    geom_point(mapping=aes(x=displ, y=hwy))
+```
+This graph illustrates that fuel efficiency drops with increasing engine displacement (size). This confirms our hypothesis.
+
+This also goes to show some ggplot2 basics:
+
+1. Start with a call to `ggplot(data=<...>)`
+2. Add on layers using `geom` functions, which use different geometric objects to represent data. [Types of Geoms](http://sape.inf.usi.ch/quick-reference/ggplot2/geom)
+3. Supply `aes`(thetic) mappings to these `geom` functions to put the layer (with `x` and `y` variables) onto the plot.
+
+More specifically, you can use the following as a plot template, replacing bracketed (`<...>`) sections: 
+```
+ggplot(data = <DATA>) + 
+  <GEOM_FUNCTION>(mapping = aes(<MAPPINGS>))
+```
+You can also add additional dimensions to the aesthetic (in addition to `x` and `y`), using `color`, `size`, `alpha` (transparency), or `shape` (max 6 unique vals). These dimensions do not need to vary by a variable, however -- can set manually within geom_point. Finally, variables can be categorical (discrete categories) or continuous (gradient colors, for example)
+```{r}
+ggplot(data=mpg) + 
+    geom_point(mapping=aes(x=displ, y=hwy, color=class), shape=2) # 2 -> Open triangle
+```
+As we can see, SUVs and Pickups tend to have the largest engines and worst mileage, while midsize cars and minivans have average engine sizes and average mileage, and compact and subcompact cars have the smallest engines and highest highway mileage. One thing to note is that 2 seater cars (sports cars) are outliers -- they have very large engines but also average mileage, likely because they weight less than the SUVs and pickups with comparably sized engines.
+
+Another way to add dimensions is with facets. `facet_wrap` is useful for faceting on a single variable, and `facet_grid` is useful for faceting on 2 variables. Note that faceting on a sufficiently lengthy continuous variable yields facets only for the (min, max) of the range
+```{r}
+ggplot(data=mpg) + 
+    geom_point(mapping=aes(x=displ, y=hwy)) +
+    facet_wrap(facet= ~class)   # Class is categorical
+
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) + 
+  facet_grid(drv ~ cyl)
+```
+
+You can also overlap geoms simply. All three plots map the same data, but are special cases:
+```{r message=FALSE}
+# Explicit local mappings
+ggplot(data = mpg) + 
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  geom_smooth(mapping = aes(x = displ, y = hwy))
+
+# Concise global mapping
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point() + 
+  geom_smooth()
+
+# Concise global mapping w/ explicit local mappings
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy)) + 
+  geom_point(mapping=aes(color=class)) + 
+  geom_smooth()
+```
+
+You can also group up best fit lines by another variable and color it the same for both geoms.
+```{r message=FALSE, warning=FALSE}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = class)) + 
+  geom_point() + 
+  geom_smooth(se = FALSE)
+```
+
+
+
+### Chapter 4 - Workflow Basics
+
+### Chapter 5 - Data Transformation
