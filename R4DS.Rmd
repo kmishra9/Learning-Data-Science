@@ -5,7 +5,7 @@ output: html_notebook
 
 This notebook attempts to navigate Hadley Wickham's [R for Data Science](http://r4ds.had.co.nz/index.html).
 ```{r message=FALSE}
-
+library(nycflights13)
 library(tidyverse)
 ```
 
@@ -90,17 +90,102 @@ ggplot(data=diamonds) +
 ```
 
 With additional complexity, we have an updated template
+```  
+ggplot(data = <DATA>) +  
+  <GEOM_FUNCTION>(  
+     mapping = aes(<MAPPINGS>),  
+     stat = <STAT>,   
+     position = <POSITION>  
+  ) +  
+  <COORDINATE_FUNCTION> +  
+  <FACET_FUNCTION>  
 ```
-ggplot(data = <DATA>) + 
-  <GEOM_FUNCTION>(
-     mapping = aes(<MAPPINGS>),
-     stat = <STAT>, 
-     position = <POSITION>
-  ) +
-  <COORDINATE_FUNCTION> +
-  <FACET_FUNCTION>
- ```
-
-### Chapter 4 - Workflow Basics
 
 ### Chapter 5 - Data Transformation
+Motivation: data is messy and rarely comes to you the way you would like it to be. Understanding how to manipulate data that you have possession of gives you deeper access to insights you can glean from the data.
+
+[Dplyr Cheatsheet](http://rstudio.com/cheatsheets)
+
+```{r}
+flights %>% head
+```
+
+To briefly describe each variable:  
+
+- `year`, `month`, `day` correspond to the date of departure  
+- `dep_time`, `arr_time` correspond to actual departure and arrival times  
+- `dep_delay`, `arr_delay` correspond to delays in minutes, with negative times representing an early departure/arrival  
+- `air_time`, `distance` correspond to amount of time spent in air and distance between airports, in minutes and miles respectively
+
+Dplyr has 6 key data transformation functions:  
+
+- Pick observations by their values (`filter()`).  
+- Reorder the rows (`arrange()`).  
+- Pick variables by their names (`select()`).  
+- Create new variables with functions of existing variables (`mutate()`).  
+- Collapse many values down to a single summary (`summarise()`).  
+- Change the scope of operation of functions to groups (`group_by()`).  
+
+#### Exercises: Filter (5.2.4)
+```{r eval=FALSE}
+# Question 1
+flights %>% filter(arr_delay >= 120)
+flights %>% filter(dest == "IAH" | dest == "HOU")
+flights %>% filter(carrier %in% c("UA", "AA", "DL"))
+flights %>% filter(month %in% c(7, 8, 9))
+flights %>% filter(dep_delay <= 0 & arr_delay > 120)
+flights %>% filter(dep_delay >= 60 & dep_delay-arr_delay > 30)
+flights %>% filter(0 <= hour & hour <= 6)
+
+# Question 2
+all.equal(flights %>% filter(hour %>% between(0,6)), flights %>% filter(0 <= hour & hour <= 6))
+
+# Question 3
+flights %>% filter(is.na(dep_time)) %>% nrow
+flights %>% filter(is.na(dep_time)) %>% head
+# Based on the other missing variables, these are likely canceled flights that never took off
+
+# Question 4
+NA ^ 0      # Any number to the 0th power is 1
+NA | True   # Will always evaluate to True because only one of the sides needs to be True
+False & NA  # Will always evaluate to False because only one of the sides needs to be False
+# General rule: NA * any number except 0 is NA; If multiplied by 0, the product will always be 0
+```
+
+#### Exercises: Arrange (5.3.1)
+```{r eval=FALSE}
+# Question 1
+flights %>% arrange(desc(is.na(dep_time))) %>% head
+
+# Question 2
+flights %>% arrange(desc(dep_delay)) %>% head
+flights %>% arrange(dep_delay) %>% head
+
+# Question 3
+# There are quite a few ways to approach this question. One is by interpreting fastest to mean pure velocity (time in air/distance)
+flights %>% arrange(desc(distance/air_time)) 
+# Another way could be to see which flights made up the most time in the air, proportional to distance - this yields interesting results, and one explanation could be that the carrier is including consistent delays in its scheduled departure and arrival time
+flights %>% arrange(desc((dep_delay-arr_delay)/distance))
+
+# Question 4
+# These questions can be tackled from two different perspectives as well -- length in terms of distance? Or length in terms of time?
+flights %>% arrange(desc(distance)) # Longest by length
+flights %>% arrange(air_time) # Shortest by time
+```
+
+Helper functions for use with `select`:  
+
+- `starts_with("abc")`: matches names that begin with “abc”.
+- `ends_with("xyz")`: matches names that end with “xyz”.
+- `contains("ijk")`: matches names that contain “ijk”.
+- `matches("(.)\\1")`: selects variables that match a regular expression. This one matches any variables that contain repeated characters.
+- `num_range("x", 1:3)`: matches x1, x2 and x3.
+
+`rename()` is a version of select that allows you to rename columns and keeps all other columns not explicitly mentioned as well
+
+`mutate()` is useful for generating new columns and `everything()` can be useful when you want to move a column (or columns) to the beginning of the data frame like so:
+```{r}
+flights %>% head
+flights %>% mutate(air_time_made_up=dep_delay-arr_delay) %>% select(air_time_made_up, everything()) %>% head
+```
+
