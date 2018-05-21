@@ -186,6 +186,31 @@ Helper functions for use with `select`:
 `mutate()` is useful for generating new columns and `everything()` can be useful when you want to move a column (or columns) to the beginning of the data frame like so:
 ```{r}
 flights %>% head
-flights %>% mutate(air_time_made_up=dep_delay-arr_delay) %>% select(air_time_made_up, everything()) %>% head
+flights %>% 
+    mutate(air_time_made_up=dep_delay-arr_delay) %>% 
+    select(air_time_made_up, everything()) %>% head
+```
+
+Forming groups (and summarizing them) are also useful, as we can group by each "date" and get the average departure delay per date, then sort to find the worst days to travel.
+```{r}
+flights %>% 
+    group_by(year, month, day) %>% 
+    summarise(delay=mean(dep_delay, na.rm=TRUE)) %>%
+    arrange(desc(delay))
+    
+```
+
+### Chapter 7 - Exploratory Data Analysis (EDA)
+During EDA, we want to develop an understanding of the data to help us ask intriguing questions. 2 especially relevant questions are nearly always useful:  
+1. What type of variation occurs within my variables?
+2. What type of covariation occurs between my variables?  
+
+During EDA, graphing is an effective way to begin understanding the variables present. Detecting outliers and understanding why they are outliers (and possibly logically inconsistent) is also important. One way outliers often manifest themselves, even if not necessarily visible, is with graph axes limits being stretched beyond what might be considered normal for the data that is shown.
+
+We may want to understand variables in comparison to each other:
+```{r}
+ggplot(data = mpg) +
+  geom_boxplot(mapping = aes(x = reorder(class, hwy, FUN = median), y = hwy)) +     # 
+  coord_flip()      # Flips the plot horizontally 
 ```
 
