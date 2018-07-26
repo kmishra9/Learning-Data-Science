@@ -214,3 +214,49 @@ ggplot(data = mpg) +
   coord_flip()      # Flips the plot horizontally 
 ```
 
+### Chapter 10 - Tibbles  
+Tibbles are modernized `data.frame`s. Any data.frame can be converted into a tibble (though tibbles will never change input variable types/names and never creates row names) and tibbles can be created on their own like so:
+```{r}
+tibble(
+  x = 1:5, 
+  y = 1,                   # Single length inputs autopopulate to the appropriate length
+  z = x ^ 2 + y
+)
+
+# Example with non-syntactic names
+tibble(
+  `:)` = "smile", 
+  ` ` = "space",
+  `2000` = "number"
+)
+
+# Example transposed tibble
+tribble(
+  ~x, ~y, ~z,
+  #--|--|----
+  "a", 2, 3.6,
+  "b", 1, 8.5
+)
+```
+Tibbles are designed to print less and slightly more informatively, so they work well with big data.
+
+
+### Chapter 11 - Data Import  
+
+In general, using `data.table::fread()` or `readr::read_csv()` is much faster than base R's implementation of `read.csv()`. `read_csv` also automatically reads in dataframes as tibbles, has a progress bar, and is more reproducible than `read.csv`. 
+
+Parse methods, such as `parse_logical()`, `parse_integer()`, and `parse_date()` are useful for converting strings or string vectors into their "true" data types.
+
+
+### Chapter 12 - Tidy Data
+
+Using tidy data makes analysis much simpler. Each datatset goes in a tibble and each variable goes in its own column.
+
+`gather()` and `spread()` are two useful `tidyR` functions that can help transform non-tidy data (with variables in multiple columns or rows, respectively) into tidy data.`seperate()` is another function that helps if multiple "columns'" data is stuck within a single column (i.e.`123 / 3.1415`), and helps seperate that out into multiple columns. `unite()` is the exact opposite of `separate()` and can unite columns
+
+### Chapter 13 - Relational Data
+
+`semi_join(x, y)` keeps all observations in x that have a match in y
+`anti_join(x, y)` drops all observations in x that have a match in y.
+
+### Chapter 14 - Strings
