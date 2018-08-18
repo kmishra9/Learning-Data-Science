@@ -230,6 +230,8 @@ tibble(
   `2000` = "number"
 )
 
+
+
 # Example transposed tibble
 tribble(
   ~x, ~y, ~z,
@@ -260,3 +262,23 @@ Using tidy data makes analysis much simpler. Each datatset goes in a tibble and 
 `anti_join(x, y)` drops all observations in x that have a match in y.
 
 ### Chapter 14 - Strings
+
+Regular Expressions (regexp) governs how strings are used in. If you're doing any sort of string searching, `stringr` is a package that's very helpful for finding strings based on regexps.
+
+### Chapter 15 - Factors
+
+Factors are complex and useful. They can be ordered, sorted, and the like for categorical data. The `forcats` package is helpful for working with factors.
+
+### Chapter 16 - Dates & Times
+
+The `lubridate` package helps data scientists work with dates/times. In particular, the `ymd()`, `myd()`, `dym()`, etc. are all useful for parsing datetimes from strings after you specify what format they come as. Time spans are generally represented by `durations` (which represent an exact number of seconds), `periods` (which represent human units like weeks and months), or `intervals` (which represent a starting and ending point).
+
+### Chapter 18 - Pipes
+
+### Chapter 19 - Functions
+
+The `...` argument allows for an arbitrary number of arguments to be passed into a function. You can pass it to other arguments like `paste()` and `str_c()` that take `...` as `...` or you can access its values directly with `list(...)`. The one downside is that _any_ unmatched arguments, such as a misspelled named argument, will be considered a part of `...`. 
+
+R uses lexical scoping -- i.e. it looks up values it does not recognize from within functions in the environment where the function was defined
+
+### Chapter 20 - Functions
