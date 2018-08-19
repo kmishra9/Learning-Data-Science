@@ -281,4 +281,34 @@ The `...` argument allows for an arbitrary number of arguments to be passed into
 
 R uses lexical scoping -- i.e. it looks up values it does not recognize from within functions in the environment where the function was defined
 
-### Chapter 20 - Functions
+### Chapter 20 - Vectors
+
+### Chapter 21 - Iteration
+
+You should use `purrr::seq_along(x)` rather than `1:length(x)` as a best practice
+
+The `purrr` package also offers several utility functions that allow you to `map` functions to elements of an iterable. 
+
+`safely()` is another good function to remember that can be passed a function that does a lot of work on many elements and returns errors safely and allows you to inspect objects that the function is erroring on, rather than forcing you to debug element by element. It returns a list of two elements, where [[1]] is the result or NULL if an error occurred, and [[2]] is the error or NULL if things went smoothly. You can use the `iterable %>% map(safely(some_function))` pattern.
+
+`pmap()` is a way to iterate along vectors in parallel. Here's an example:
+``` 
+args = list(mean = list(5, 10, -3), 
+             sd = list(1, 5, 10), 
+             n = 5)
+args %>% 
+  pmap(rnorm) %>% 
+  str()
+```
+turns into subsequent commands like so:
+```
+rnorm(mean=5, sd=1, n=5)
+rnorm(mean=10, sd=5, n=5)
+rnorm(mean=-3, sd=10, n=5)
+```
+Alternatively, `pmap()` can be passed a dataframe (where each named row acts as arguments to the mapped function) as well.
+
+For function calls in which you want the side effects of the function, rather than the actual return value (such as in a plot or save function), you can use the `pwalk()` function in much the same way as the `pmap` function.
+
+### Chapter 23 - Model Basics
+
